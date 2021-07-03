@@ -1,0 +1,6 @@
+.vscode
+vendor
+.env.example
+cover.out
+cover.html
+README.md

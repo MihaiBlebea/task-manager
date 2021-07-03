@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: serbanblebea/task-manager:0.1
+        depends_on:
+            - db
+        restart: always
+        container_name: app
+        env_file:
+            - ./.env
+        ports:
+            - 8087:${HTTP_PORT}
+
+    db:
+        image: mariadb:latest
+        container_name: db
+        volumes:
+            - ./volume/mysql:/var/lib/mysql
+        restart: always
+        env_file:
+            - ./.env
+        ports:
+            - 3306:3306

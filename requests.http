@@ -1,0 +1,45 @@
+@base_url=http://localhost:8087/api/v1
+
+###
+
+GET {{base_url}}/health-check HTTP/1.1
+content-type: application/json
+
+###
+
+GET {{base_url}}/project/6 HTTP/1.1
+content-type: application/json
+
+###
+
+GET {{base_url}}/projects/user/1 HTTP/1.1
+content-type: application/json
+
+###
+
+POST {{base_url}}/project HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Prepare",
+    "color": "grey",
+    "description": "intrex",
+    "icon": "intrex"
+}
+
+###
+
+DELETE {{base_url}}/project/3 HTTP/1.1
+content-type: application/json
+
+###
+
+PUT {{base_url}}/project/6 HTTP/1.1
+content-type: application/json
+
+{
+    "title": "777",
+    "color": "blue",
+    "description": "intrex",
+    "icon": "intrex"
+}
