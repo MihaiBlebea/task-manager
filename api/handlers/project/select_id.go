@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/MihaiBlebea/task-manager/api/handlers/utils"
 	"github.com/MihaiBlebea/task-manager/domain"
 	"github.com/MihaiBlebea/task-manager/domain/project"
 	"github.com/gorilla/mux"
@@ -42,20 +43,20 @@ func SelectIdHandler(tm domain.TaskManager) http.Handler {
 		projectID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
-			sendResponse(w, response, http.StatusBadRequest)
+			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
 		proj, err := tm.GetProject(1, projectID)
 		if err != nil {
 			response.Message = err.Error()
-			sendResponse(w, response, http.StatusBadRequest)
+			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
 		response.Data = proj
 		response.Success = true
 
-		sendResponse(w, response, 200)
+		utils.SendResponse(w, response, 200)
 	})
 }

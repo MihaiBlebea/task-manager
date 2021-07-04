@@ -24,6 +24,10 @@ type Handler interface {
 	CreateProjectEndpoint() http.Handler
 	DeleteProjectEndpoint() http.Handler
 	UpdateProjectEndpoint() http.Handler
+
+	CreateTaskEndpoint() http.Handler
+	DeleteTaskEndpoint() http.Handler
+	CompleteTaskEndpoint() http.Handler
 }
 
 type Service struct {

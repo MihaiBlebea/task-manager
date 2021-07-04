@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/MihaiBlebea/task-manager/api/handlers/project"
+	"github.com/MihaiBlebea/task-manager/api/handlers/task"
 	"github.com/MihaiBlebea/task-manager/domain"
 	"gorm.io/gorm"
 )
@@ -40,4 +41,16 @@ func (s *Service) DeleteProjectEndpoint() http.Handler {
 
 func (s *Service) UpdateProjectEndpoint() http.Handler {
 	return project.UpdateHandler(s.domain)
+}
+
+func (s *Service) CreateTaskEndpoint() http.Handler {
+	return task.CreateHandler(s.domain)
+}
+
+func (s *Service) DeleteTaskEndpoint() http.Handler {
+	return task.DeleteHandler(s.domain)
+}
+
+func (s *Service) CompleteTaskEndpoint() http.Handler {
+	return task.CompleteHandler(s.domain)
 }

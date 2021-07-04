@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/MihaiBlebea/task-manager/api/handlers/utils"
 	"github.com/MihaiBlebea/task-manager/domain"
 	"github.com/MihaiBlebea/task-manager/domain/project"
 	"github.com/gorilla/mux"
@@ -42,20 +43,20 @@ func SelectUserHandler(tm domain.TaskManager) http.Handler {
 		userID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
-			sendResponse(w, response, http.StatusBadRequest)
+			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
 		projects, err := tm.GetUserProjects(userID)
 		if err != nil {
 			response.Message = err.Error()
-			sendResponse(w, response, http.StatusBadRequest)
+			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
 		response.Data = projects
 		response.Success = true
 
-		sendResponse(w, response, 200)
+		utils.SendResponse(w, response, 200)
 	})
 }

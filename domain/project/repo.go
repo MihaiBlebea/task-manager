@@ -7,8 +7,9 @@ import (
 )
 
 var (
-	ErrNoRecord  error = errors.New("Record not found")
-	ErrNoRecords error = errors.New("Records not found")
+	ErrNoRecord    error = errors.New("Record not found")
+	ErrNoRecords   error = errors.New("Records not found")
+	ErrNotInserted error = errors.New("Could not insert record")
 )
 
 type repo struct {
@@ -18,7 +19,7 @@ type repo struct {
 type Repo interface {
 	FindWithID(projectID int) (*Project, error)
 	FindWithUserID(userID int) ([]Project, error)
-	Save(project *Project) error
+	Save(project *Project) (int, error)
 	Delete(projectID int) error
 	Update(project *Project) error
 }
@@ -55,12 +56,22 @@ func (r *repo) FindWithUserID(userID int) ([]Project, error) {
 	return projects, nil
 }
 
-func (r *repo) Save(project *Project) error {
-	return r.conn.Create(project).Error
+func (r *repo) Save(project *Project) (int, error) {
+	cmd := r.conn.Create(project)
+	if cmd.RowsAffected == 0 {
+		return 0, ErrNotInserted
+	}
+
+	return project.ID, cmd.Error
 }
 
 func (r *repo) Delete(projectID int) error {
-	cmd := r.conn.Delete(Project{ID: projectID})
+	project := &Project{}
+	if err := r.conn.Where("id = ?", projectID).Find(project).Error; err != nil {
+		return err
+	}
+
+	cmd := r.conn.Delete(project)
 	if cmd.RowsAffected == 0 {
 		return ErrNoRecord
 	}

@@ -7,7 +7,7 @@ content-type: application/json
 
 ###
 
-GET {{base_url}}/project/6 HTTP/1.1
+GET {{base_url}}/project/2 HTTP/1.1
 content-type: application/json
 
 ###
@@ -29,12 +29,12 @@ content-type: application/json
 
 ###
 
-DELETE {{base_url}}/project/3 HTTP/1.1
+DELETE {{base_url}}/project/2 HTTP/1.1
 content-type: application/json
 
 ###
 
-PUT {{base_url}}/project/6 HTTP/1.1
+PUT {{base_url}}/project/1 HTTP/1.1
 content-type: application/json
 
 {
@@ -43,3 +43,29 @@ content-type: application/json
     "description": "intrex",
     "icon": "intrex"
 }
+
+### 
+
+POST {{base_url}}/task HTTP/1.1
+content-type: application/json
+
+{
+    "project_id": 3,
+    "subtask_id": 20,
+    "title": "This is a subtask",
+    "note": "This is a task",
+    "expire": "2020-08-20T15:04:05.000Z",
+    "repeat": false,
+    "priority": 1
+}
+
+###
+
+DELETE {{base_url}}/task/11 HTTP/1.1
+content-type: application/json
+
+###
+
+PUT {{base_url}}/task/complete/11 HTTP/1.1
+content-type: application/json
+

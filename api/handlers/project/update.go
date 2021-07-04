@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/MihaiBlebea/task-manager/api/handlers/utils"
 	"github.com/MihaiBlebea/task-manager/domain"
 	"github.com/gorilla/mux"
 )
@@ -56,20 +57,20 @@ func UpdateHandler(tm domain.TaskManager) http.Handler {
 		projectID, req, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
-			sendResponse(w, response, http.StatusBadRequest)
+			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
 		err = tm.UpdateProject(1, projectID, req.Title, req.Color, req.Description, req.Icon)
 		if err != nil {
 			response.Message = err.Error()
-			sendResponse(w, response, http.StatusBadRequest)
+			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
 		response.Success = true
 		response.ProjectID = projectID
 
-		sendResponse(w, response, 200)
+		utils.SendResponse(w, response, 200)
 	})
 }

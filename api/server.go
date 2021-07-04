@@ -23,6 +23,7 @@ func server(handler Handler, logger Logger) {
 	api.Handle("/health-check", handler.HealthEndpoint()).
 		Methods(http.MethodGet)
 
+	// Project
 	api.Handle("/project", handler.CreateProjectEndpoint()).
 		Methods(http.MethodPost)
 
@@ -38,10 +39,20 @@ func server(handler Handler, logger Logger) {
 	api.Handle("/project/{project_id}", handler.UpdateProjectEndpoint()).
 		Methods(http.MethodPut)
 
+	// Task
+	api.Handle("/task", handler.CreateTaskEndpoint()).
+		Methods(http.MethodPost)
+
+	api.Handle("/task/{task_id}", handler.DeleteTaskEndpoint()).
+		Methods(http.MethodDelete)
+
+	api.Handle("/task/complete/{task_id}", handler.CompleteTaskEndpoint()).
+		Methods(http.MethodPut)
+
 	r.Use(loggerMiddleware(logger))
 
 	srv := &http.Server{
-		Handler:      cors.AllowAll().Handler(runsafter(r)),
+		Handler:      cors.AllowAll().Handler(r),
 		Addr:         fmt.Sprintf("0.0.0.0:%s", os.Getenv("HTTP_PORT")),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

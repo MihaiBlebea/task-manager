@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/MihaiBlebea/task-manager/api/handlers/utils"
 )
 
 func healthEndpoint() http.Handler {
@@ -12,16 +13,6 @@ func healthEndpoint() http.Handler {
 		}
 		response.OK = true
 
-		sendResponse(w, &response, http.StatusOK)
+		utils.SendResponse(w, &response, http.StatusOK)
 	})
-}
-
-func sendResponse(w http.ResponseWriter, resp interface{}, code int) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.WriteHeader(code)
-
-	b, _ := json.Marshal(resp)
-
-	w.Write(b)
 }

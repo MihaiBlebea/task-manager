@@ -1,4 +1,4 @@
-package project
+package task
 
 import (
 	"encoding/json"
@@ -10,16 +10,21 @@ import (
 )
 
 type CreateRequest struct {
-	Title       string `json:"title"`
-	Color       string `json:"color"`
-	Description string `json:"description"`
-	Icon        string `json:"icon"`
+	SubtaskID       int    `json:"subtask_id"`
+	ProjectID       int    `json:"project_id"`
+	Title           string `json:"title"`
+	Note            string `json:"note"`
+	Expire          string `json:"expire"`
+	Repeat          bool   `json:"repeat"`
+	RepeatDayOfWeek int    `json:"repeat_day_of_week"`
+	RepeatTimeOfDay string `json:"repeat_time_of_day"`
+	Priority        int    `json:"priority"`
 }
 
 type CreateResponse struct {
-	ProjectID int    `json:"id,omitempty"`
-	Success   bool   `json:"success"`
-	Message   string `json:"message,omitempty"`
+	TaskID  int    `json:"id,omitempty"`
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
 }
 
 func CreateHandler(tm domain.TaskManager) http.Handler {
@@ -29,6 +34,10 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			return &request, err
+		}
+
+		if request.ProjectID == 0 {
+			return &request, errors.New("Invalid request param project_id")
 		}
 
 		if request.Title == "" {
@@ -48,7 +57,18 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		id, err := tm.CreateProject(1, req.Title, req.Color, req.Description, req.Icon)
+		id, err := tm.CreateTask(
+			1,
+			req.SubtaskID,
+			req.ProjectID,
+			req.Title,
+			req.Note,
+			req.Expire,
+			req.Repeat,
+			req.RepeatDayOfWeek,
+			req.RepeatTimeOfDay,
+			req.Priority,
+		)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)
@@ -56,7 +76,7 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 		}
 
 		response.Success = true
-		response.ProjectID = id
+		response.TaskID = id
 
 		utils.SendResponse(w, response, 200)
 	})

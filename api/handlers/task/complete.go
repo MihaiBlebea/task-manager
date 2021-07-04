@@ -1,4 +1,4 @@
-package project
+package task
 
 import (
 	"errors"
@@ -10,42 +10,42 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type DeleteResponse struct {
+type CompleteResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message,omitempty"`
 }
 
-func DeleteHandler(tm domain.TaskManager) http.Handler {
+func CompleteHandler(tm domain.TaskManager) http.Handler {
 	validate := func(r *http.Request) (int, error) {
 		params := mux.Vars(r)
-		id, ok := params["project_id"]
+		id, ok := params["task_id"]
 		if ok == false {
-			return 0, errors.New("Invalid request param project_id")
+			return 0, errors.New("Invalid request param task_id")
 		}
 
-		projectID, err := strconv.Atoi(id)
+		taskID, err := strconv.Atoi(id)
 		if err != nil {
 			return 0, err
 		}
 
-		if projectID == 0 {
-			return 0, errors.New("Invalid request param project_id")
+		if taskID == 0 {
+			return 0, errors.New("Invalid request param task_id")
 		}
 
-		return projectID, nil
+		return taskID, nil
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		response := CreateResponse{}
+		response := CompleteResponse{}
 
-		projectID, err := validate(r)
+		taskID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
-		err = tm.DeleteProject(1, projectID)
+		err = tm.CompleteTask(1, taskID)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

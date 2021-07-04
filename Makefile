@@ -12,6 +12,6 @@ down:
 	
 refresh:
 	docker-compose stop &&\
-	docker-compose rm &&\
+	docker-compose rm -f &&\
 	rm -r ./volume &&\
-	make local
+	make setup
