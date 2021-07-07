@@ -32,14 +32,6 @@ var startCmd = &cobra.Command{
 		l.SetOutput(os.Stdout)
 		l.SetLevel(logrus.InfoLevel)
 
-		// dsn := fmt.Sprintf(
-		// 	"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Europe/London",
-		// 	os.Getenv("POSTGRES_HOST"),
-		// 	os.Getenv("POSTGRES_USER"),
-		// 	os.Getenv("POSTGRES_PASSWORD"),
-		// 	os.Getenv("POSTGRES_DB"),
-		// 	os.Getenv("POSTGRES_PORT"),
-		// )
 		db, err := connectSQL()
 		if err != nil {
 			return err

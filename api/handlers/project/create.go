@@ -41,6 +41,13 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := CreateResponse{}
 
+		userID, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		req, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
@@ -48,7 +55,7 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		id, err := tm.CreateProject(1, req.Title, req.Color, req.Description, req.Icon)
+		id, err := tm.CreateProject(userID, req.Title, req.Color, req.Description, req.Icon)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

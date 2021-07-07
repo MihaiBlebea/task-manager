@@ -54,6 +54,13 @@ func UpdateHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := UpdateResponse{}
 
+		userID, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		projectID, req, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
@@ -61,7 +68,7 @@ func UpdateHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		err = tm.UpdateProject(1, projectID, req.Title, req.Color, req.Description, req.Icon)
+		err = tm.UpdateProject(userID, projectID, req.Title, req.Color, req.Description, req.Icon)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

@@ -40,6 +40,13 @@ func SelectIdHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := SelectResponse{}
 
+		userID, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		projectID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
@@ -47,7 +54,7 @@ func SelectIdHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		proj, err := tm.GetProject(1, projectID)
+		proj, err := tm.GetProject(userID, projectID)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

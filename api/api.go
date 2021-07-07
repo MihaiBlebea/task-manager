@@ -19,6 +19,9 @@ type Logger interface {
 type Handler interface {
 	HealthEndpoint() http.Handler
 
+	RegisterEndpoint() http.Handler
+	LoginEndpoint() http.Handler
+
 	SelectProjectEndpoint() http.Handler
 	SelectUserProjectsEndpoint() http.Handler
 	CreateProjectEndpoint() http.Handler

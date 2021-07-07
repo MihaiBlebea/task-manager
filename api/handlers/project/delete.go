@@ -38,6 +38,13 @@ func DeleteHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := CreateResponse{}
 
+		userID, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		projectID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
@@ -45,7 +52,7 @@ func DeleteHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		err = tm.DeleteProject(1, projectID)
+		err = tm.DeleteProject(userID, projectID)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

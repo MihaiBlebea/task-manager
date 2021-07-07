@@ -5,6 +5,7 @@ import (
 
 	"github.com/MihaiBlebea/task-manager/api/handlers/project"
 	"github.com/MihaiBlebea/task-manager/api/handlers/task"
+	"github.com/MihaiBlebea/task-manager/api/handlers/user"
 	"github.com/MihaiBlebea/task-manager/domain"
 	"gorm.io/gorm"
 )
@@ -21,6 +22,14 @@ func New(conn *gorm.DB) *Service {
 
 func (s *Service) HealthEndpoint() http.Handler {
 	return healthEndpoint()
+}
+
+func (s *Service) RegisterEndpoint() http.Handler {
+	return user.RegisterHandler(s.domain)
+}
+
+func (s *Service) LoginEndpoint() http.Handler {
+	return user.LoginHandler(s.domain)
 }
 
 func (s *Service) SelectProjectEndpoint() http.Handler {

@@ -40,10 +40,24 @@ func SelectUserHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := SelectByUserResponse{}
 
+		id, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		userID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)
+			return
+		}
+
+		// Check if the supplied user id matches the user id from JTW token
+		if userID != id {
+			response.Message = "Request for invalid user projects"
+			utils.SendResponse(w, response, http.StatusForbidden)
 			return
 		}
 

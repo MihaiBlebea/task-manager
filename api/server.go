@@ -23,6 +23,13 @@ func server(handler Handler, logger Logger) {
 	api.Handle("/health-check", handler.HealthEndpoint()).
 		Methods(http.MethodGet)
 
+	// User
+	api.Handle("/user/register", handler.RegisterEndpoint()).
+		Methods(http.MethodPost)
+
+	api.Handle("/user/login", handler.LoginEndpoint()).
+		Methods(http.MethodPost)
+
 	// Project
 	api.Handle("/project", handler.CreateProjectEndpoint()).
 		Methods(http.MethodPost)
