@@ -103,7 +103,7 @@ func (tm *taskManager) GetProject(userID, projectID int) (*project.Project, erro
 	}
 
 	// Validate if the user is the owner of the project
-	if proj.ID != userID {
+	if proj.UserID != userID {
 		return &project.Project{}, ErrUserNotOwner
 	}
 

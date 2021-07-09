@@ -1,5 +1,5 @@
 @base_url=http://localhost:8087/api/v1
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0NDQ0Nzg0MDAsInVzZXJfaWQiOjN9.AJido-ix6ox9QTEQE7KSyQoCkZAi4OD39TGnMYP4LJ0
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE0NDQ0Nzg0MDAsInVzZXJfaWQiOjF9.-I9Y7Itpa_bj1iX1NeqzjDYnQj4NdvFRpZ2rvy2hiLw
 
 ###
 
