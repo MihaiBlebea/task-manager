@@ -200,22 +200,16 @@ func (tm *taskManager) CreateTask(
 	repeatTimeOfDay string,
 	priority int) (int, error) {
 
-	expireTime, err := time.Parse(timeLayout, expire)
-	if err != nil {
-		return 0, err
+	task := task.New(projectID, subtaskID, title)
+	if expire != "" {
+		expireTime, err := time.Parse(timeLayout, expire)
+		if err != nil {
+			return 0, err
+		}
+		task.Expire = expireTime
 	}
 
-	return tm.taskRepo.Save(&task.Task{
-		SubtaskID:       subtaskID,
-		ProjectID:       projectID,
-		Title:           title,
-		Note:            note,
-		Expire:          expireTime,
-		Repeat:          repeat,
-		RepeatDayOfWeek: reapeatDayOfWeek,
-		RepeatTimeOfDay: repeatTimeOfDay,
-		Priority:        priority,
-	})
+	return tm.taskRepo.Save(task)
 }
 
 func (tm *taskManager) DeleteTask(userID, taskID int) error {

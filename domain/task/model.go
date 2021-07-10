@@ -24,8 +24,8 @@ type Task struct {
 	UpdatedAt       time.Time `json:"updated_at"`
 }
 
-func New(projectID int, title string) *Task {
-	return &Task{ProjectID: projectID, Title: title}
+func New(projectID, subtaskID int, title string) *Task {
+	return &Task{ProjectID: projectID, SubtaskID: subtaskID, Title: title}
 }
 
 func (t *Task) AfterFind(conn *gorm.DB) (err error) {
