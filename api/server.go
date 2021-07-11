@@ -59,7 +59,7 @@ func server(handler Handler, logger Logger) {
 	r.Use(loggerMiddleware(logger))
 
 	srv := &http.Server{
-		Handler:      cors.AllowAll().Handler(r),
+		Handler:      cors.AllowAll().Handler(api),
 		Addr:         fmt.Sprintf("0.0.0.0:%s", os.Getenv("HTTP_PORT")),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
