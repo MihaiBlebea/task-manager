@@ -38,6 +38,16 @@ type TaskManager interface {
 		reapeatDayOfWeek int,
 		repeatTimeOfDay string,
 		priority int) (int, error)
+	UpdateTask(
+		userID,
+		taskID int,
+		title,
+		note string,
+		expire string,
+		repeat bool,
+		reapeatDayOfWeek int,
+		repeatTimeOfDay string,
+		priority int) error
 	DeleteTask(userID, taskID int) error
 	CompleteTask(userID, taskID int) error
 }
@@ -127,7 +137,21 @@ func (tm *taskManager) GetUserProjects(userID int) (projects []project.Project, 
 		return projects, ErrInvalidUserID
 	}
 
-	return tm.projectRepo.FindWithUserID(userID)
+	projects, err := tm.projectRepo.FindWithUserID(userID)
+	if err != nil {
+		return projects, err
+	}
+
+	for index := range projects {
+		tasks, err := tm.taskRepo.FindTasksWithProjectID(projects[index].ID)
+		if err != nil {
+			return projects, err
+		}
+
+		projects[index].Tasks = tasks
+	}
+
+	return projects, nil
 }
 
 func (tm *taskManager) CreateProject(
@@ -212,11 +236,67 @@ func (tm *taskManager) CreateTask(
 	return tm.taskRepo.Save(task)
 }
 
+func (tm *taskManager) UpdateTask(
+	userID,
+	taskID int,
+	title,
+	note string,
+	expire string,
+	repeat bool,
+	reapeatDayOfWeek int,
+	repeatTimeOfDay string,
+	priority int) error {
+
+	if isValid := tm.validateUserID(userID); isValid == false {
+		return ErrInvalidUserID
+	}
+
+	if isOwner := tm.validateTaskOwner(userID, taskID); isOwner == false {
+		return ErrUserNotOwner
+	}
+
+	tsk := task.Task{
+		ID:              taskID,
+		Title:           title,
+		Note:            note,
+		Repeat:          repeat,
+		RepeatDayOfWeek: reapeatDayOfWeek,
+		RepeatTimeOfDay: repeatTimeOfDay,
+		Priority:        priority,
+	}
+
+	if expire != "" {
+		expireTime, err := time.Parse(timeLayout, expire)
+		if err != nil {
+			return err
+		}
+		tsk.Expire = expireTime
+	}
+
+	return tm.taskRepo.Update(&tsk)
+}
+
 func (tm *taskManager) DeleteTask(userID, taskID int) error {
+	if isValid := tm.validateUserID(userID); isValid == false {
+		return ErrInvalidUserID
+	}
+
+	if isOwner := tm.validateTaskOwner(userID, taskID); isOwner == false {
+		return ErrUserNotOwner
+	}
+
 	return tm.taskRepo.Delete(taskID)
 }
 
 func (tm *taskManager) CompleteTask(userID, taskID int) error {
+	if isValid := tm.validateUserID(userID); isValid == false {
+		return ErrInvalidUserID
+	}
+
+	if isOwner := tm.validateTaskOwner(userID, taskID); isOwner == false {
+		return ErrUserNotOwner
+	}
+
 	task, err := tm.taskRepo.FindWithID(taskID)
 	if err != nil {
 		return err

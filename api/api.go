@@ -29,6 +29,7 @@ type Handler interface {
 	UpdateProjectEndpoint() http.Handler
 
 	CreateTaskEndpoint() http.Handler
+	UpdateTaskEndpoint() http.Handler
 	DeleteTaskEndpoint() http.Handler
 	CompleteTaskEndpoint() http.Handler
 }

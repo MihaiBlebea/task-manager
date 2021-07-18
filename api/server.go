@@ -50,6 +50,9 @@ func server(handler Handler, logger Logger) {
 	api.Handle("/task", handler.CreateTaskEndpoint()).
 		Methods(http.MethodPost)
 
+	api.Handle("/task/{task_id}", handler.UpdateTaskEndpoint()).
+		Methods(http.MethodPut)
+
 	api.Handle("/task/{task_id}", handler.DeleteTaskEndpoint()).
 		Methods(http.MethodDelete)
 

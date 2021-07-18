@@ -38,6 +38,13 @@ func DeleteHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := DeleteResponse{}
 
+		userID, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		taskID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
@@ -45,7 +52,7 @@ func DeleteHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		err = tm.DeleteTask(1, taskID)
+		err = tm.DeleteTask(userID, taskID)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

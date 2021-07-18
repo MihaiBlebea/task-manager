@@ -20,3 +20,12 @@ func (tm *taskManager) validateProjectOwner(userID, projectID int) bool {
 
 	return true
 }
+
+func (tm *taskManager) validateTaskOwner(userID, taskID int) bool {
+	tsk, err := tm.taskRepo.FindWithID(taskID)
+	if err != nil {
+		return false
+	}
+
+	return tm.validateProjectOwner(userID, tsk.ProjectID)
+}

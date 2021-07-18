@@ -29,7 +29,7 @@ content-type: application/json
 
 ###
 
-GET {{base_url}}/project/3 HTTP/2.0
+GET {{base_url}}/project/1 HTTP/2.0
 content-type: application/json
 Authorization: Bearer {{token}}
 
@@ -54,13 +54,13 @@ Authorization: Bearer {{token}}
 
 ###
 
-DELETE {{base_url}}/project/2 HTTP/1.1
+DELETE {{base_url}}/project/2 HTTP/2.0
 content-type: application/json
 Authorization: Bearer {{token}}
 
 ###
 
-PUT {{base_url}}/project/1 HTTP/1.1
+PUT {{base_url}}/project/1 HTTP/2.0
 content-type: application/json
 Authorization: Bearer {{token}}
 
@@ -73,8 +73,9 @@ Authorization: Bearer {{token}}
 
 ### 
 
-POST {{base_url}}/task HTTP/1.1
+POST {{base_url}}/task HTTP/2.0
 content-type: application/json
+Authorization: Bearer {{token}}
 
 {
     "project_id": 3,
@@ -88,11 +89,27 @@ content-type: application/json
 
 ###
 
-DELETE {{base_url}}/task/11 HTTP/1.1
+PUT {{base_url}}/task/1 HTTP/2.0
 content-type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "This is a subtask",
+    "note": "This is a task",
+    "expire": "2020-08-20T15:04:05.000Z",
+    "repeat": false,
+    "priority": 1
+}
 
 ###
 
-PUT {{base_url}}/task/complete/18 HTTP/1.1
+DELETE {{base_url}}/task/11 HTTP/2.0
 content-type: application/json
+Authorization: Bearer {{token}}
+
+###
+
+PUT {{base_url}}/task/complete/18 HTTP/2.0
+content-type: application/json
+Authorization: Bearer {{token}}
 

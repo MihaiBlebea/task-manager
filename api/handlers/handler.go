@@ -56,6 +56,10 @@ func (s *Service) CreateTaskEndpoint() http.Handler {
 	return task.CreateHandler(s.domain)
 }
 
+func (s *Service) UpdateTaskEndpoint() http.Handler {
+	return task.UpdateHandler(s.domain)
+}
+
 func (s *Service) DeleteTaskEndpoint() http.Handler {
 	return task.DeleteHandler(s.domain)
 }

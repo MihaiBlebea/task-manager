@@ -38,6 +38,13 @@ func CompleteHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := CompleteResponse{}
 
+		userID, err := utils.GetUserIDFromRequest(r)
+		if err != nil {
+			response.Message = err.Error()
+			utils.SendResponse(w, response, http.StatusForbidden)
+			return
+		}
+
 		taskID, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
@@ -45,7 +52,7 @@ func CompleteHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		err = tm.CompleteTask(1, taskID)
+		err = tm.CompleteTask(userID, taskID)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)

@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/MihaiBlebea/task-manager/api/handlers/utils"
 	"github.com/MihaiBlebea/task-manager/domain"
+	"github.com/gorilla/mux"
 )
 
-type CreateRequest struct {
-	SubtaskID       int    `json:"subtask_id"`
-	ProjectID       int    `json:"project_id"`
+type UpdateRequest struct {
 	Title           string `json:"title"`
 	Note            string `json:"note"`
 	Expire          string `json:"expire"`
@@ -21,30 +21,41 @@ type CreateRequest struct {
 	Priority        int    `json:"priority"`
 }
 
-type CreateResponse struct {
+type UpdateResponse struct {
 	TaskID  int    `json:"id,omitempty"`
 	Success bool   `json:"success"`
 	Message string `json:"message,omitempty"`
 }
 
-func CreateHandler(tm domain.TaskManager) http.Handler {
-	validate := func(r *http.Request) (*CreateRequest, error) {
-		request := CreateRequest{}
+func UpdateHandler(tm domain.TaskManager) http.Handler {
+	validate := func(r *http.Request) (int, *UpdateRequest, error) {
+		request := UpdateRequest{}
 
 		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
-			return &request, err
+			return 0, &request, err
 		}
 
-		if request.ProjectID == 0 {
-			return &request, errors.New("Invalid request param project_id")
+		params := mux.Vars(r)
+		id, ok := params["task_id"]
+		if ok == false {
+			return 0, &request, errors.New("Invalid request param task_id")
+		}
+
+		taskID, err := strconv.Atoi(id)
+		if err != nil {
+			return 0, &request, err
+		}
+
+		if taskID == 0 {
+			return 0, &request, errors.New("Invalid request param task_id")
 		}
 
 		if request.Title == "" {
-			return &request, errors.New("Invalid request param title")
+			return 0, &request, errors.New("Invalid request param title")
 		}
 
-		return &request, nil
+		return taskID, &request, nil
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -57,17 +68,16 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 			return
 		}
 
-		req, err := validate(r)
+		taskID, req, err := validate(r)
 		if err != nil {
 			response.Message = err.Error()
 			utils.SendResponse(w, response, http.StatusBadRequest)
 			return
 		}
 
-		id, err := tm.CreateTask(
+		err = tm.UpdateTask(
 			userID,
-			req.SubtaskID,
-			req.ProjectID,
+			taskID,
 			req.Title,
 			req.Note,
 			req.Expire,
@@ -83,7 +93,6 @@ func CreateHandler(tm domain.TaskManager) http.Handler {
 		}
 
 		response.Success = true
-		response.TaskID = id
 
 		utils.SendResponse(w, response, 200)
 	})
