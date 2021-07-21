@@ -2,3 +2,4 @@
 vendor
 volume
 .vscode
+Makefile

@@ -1,4 +1,4 @@
-telegram_token = 1925485610:AAH77lkdTDVMup-IxFB3soCAxSc1NZGQ-AA
+telegram_token = 
 ngrok_tunnel = https://3494421cb1cd.ngrok.io
 
 setup: build up
