@@ -18,7 +18,7 @@ func WebhookHandler(tm domain.TaskManager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		response := WebhookResponse{}
 
-		tel := telegram.New()
+		tel := telegram.New(tm)
 
 		var update, err = tel.ParseRequest(r)
 		if err != nil {

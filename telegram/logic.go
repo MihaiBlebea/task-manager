@@ -9,21 +9,23 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+
+	"github.com/MihaiBlebea/task-manager/domain"
 )
 
-type Update struct {
-	UpdateId int     `json:"update_id"`
-	Message  Message `json:"message"`
-}
+// type Update struct {
+// 	UpdateId int     `json:"update_id"`
+// 	Message  Message `json:"message"`
+// }
 
-type Message struct {
-	Text string `json:"text"`
-	Chat Chat   `json:"chat"`
-}
+// type Message struct {
+// 	Text string `json:"text"`
+// 	Chat Chat   `json:"chat"`
+// }
 
-type Chat struct {
-	Id int `json:"id"`
-}
+// type Chat struct {
+// 	Id int `json:"id"`
+// }
 
 type Service interface {
 	ParseRequest(r *http.Request) (*Update, error)
@@ -32,10 +34,11 @@ type Service interface {
 }
 
 type service struct {
+	tm domain.TaskManager
 }
 
-func New() Service {
-	return &service{}
+func New(tm domain.TaskManager) Service {
+	return &service{tm}
 }
 
 func (s *service) ParseRequest(r *http.Request) (*Update, error) {
@@ -75,29 +78,51 @@ func (s *service) SendResponse(chatId int, text string) (string, error) {
 func (s *service) HandleRequest(update *Update) error {
 	isCmd := isCommand(update.Message.Text)
 
+	fmt.Printf("%+v\n", update.Message.From.ID)
+
 	if isCmd == false {
-		s.SendResponse(update.Message.Chat.Id, "This is not a command")
+		s.SendResponse(update.Message.Chat.ID, "This is not a command")
 		return nil
 	}
 
-	resp, err := handleCommand(update.Message.Text)
+	resp, err := s.handleCommand(update.Message.Text)
 	if err != nil {
 		return err
 	}
 
-	s.SendResponse(update.Message.Chat.Id, resp)
+	s.SendResponse(int(update.Message.Chat.ID), resp)
 
 	return nil
 }
 
-func handleCommand(command string) (string, error) {
+func (s *service) handleCommand(command string) (string, error) {
 	cmd := TelegramCmd(command)
 
 	switch cmd {
+	case ProjectsCmd:
+		projects, err := s.tm.GetUserProjects(1)
+		if err != nil {
+			return "", nil
+		}
+
+		message := "This are your tasks for today: \n"
+		for index, proj := range projects {
+			message += fmt.Sprintf("%d. %s\n", index+1, proj.Title)
+		}
+
+		return message, nil
+	case CreateProjectCmd:
+		return "Create a new project", nil
+	case RemoveProjectCmd:
+		return "Remove a project", nil
 	case CreateTaskCmd:
 		return "Create a new task", nil
+	case RemoveTaskCmd:
+		return "Remove a task", nil
 	case CompleteTaskCmd:
 		return "Complete a task", nil
+	case TasksCmd:
+		return "Return all tasks", nil
 	}
 
 	return "", errors.New("This is not a valid command")
