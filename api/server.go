@@ -59,6 +59,10 @@ func server(handler Handler, logger Logger) {
 	api.Handle("/task/complete/{task_id}", handler.CompleteTaskEndpoint()).
 		Methods(http.MethodPut)
 
+	// Telegram webhook endpoint
+	api.Handle("/webhook/telegram", handler.TelegramWebhookEndpoint()).
+		Methods(http.MethodPost)
+
 	r.Use(loggerMiddleware(logger))
 
 	srv := &http.Server{
