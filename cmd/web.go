@@ -1,29 +1,26 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/MihaiBlebea/task-manager/api"
 	handler "github.com/MihaiBlebea/task-manager/api/handlers"
+	"github.com/MihaiBlebea/task-manager/db"
 	"github.com/MihaiBlebea/task-manager/domain/project"
 	"github.com/MihaiBlebea/task-manager/domain/task"
 	"github.com/MihaiBlebea/task-manager/domain/user"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 func init() {
-	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(webCmd)
 }
 
-var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start the application server.",
-	Long:  "Start the application server.",
+var webCmd = &cobra.Command{
+	Use:   "web",
+	Short: "Start the web server.",
+	Long:  "Start the web server.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		l := logrus.New()
@@ -32,7 +29,7 @@ var startCmd = &cobra.Command{
 		l.SetOutput(os.Stdout)
 		l.SetLevel(logrus.InfoLevel)
 
-		db, err := connectSQL()
+		db, err := db.ConnectSQL()
 		if err != nil {
 			return err
 		}
@@ -45,19 +42,4 @@ var startCmd = &cobra.Command{
 
 		return nil
 	},
-}
-
-func connectSQL() (*gorm.DB, error) {
-	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%v)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("MYSQL_USER"),
-		os.Getenv("MYSQL_PASSWORD"),
-		os.Getenv("MYSQL_HOST"),
-		os.Getenv("MYSQL_PORT"),
-		os.Getenv("MYSQL_DATABASE"),
-	)
-
-	return gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
 }

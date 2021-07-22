@@ -5,7 +5,6 @@ import (
 
 	"github.com/MihaiBlebea/task-manager/api/handlers/project"
 	"github.com/MihaiBlebea/task-manager/api/handlers/task"
-	"github.com/MihaiBlebea/task-manager/api/handlers/telegram"
 	"github.com/MihaiBlebea/task-manager/api/handlers/user"
 	"github.com/MihaiBlebea/task-manager/domain"
 	"gorm.io/gorm"
@@ -67,9 +66,4 @@ func (s *Service) DeleteTaskEndpoint() http.Handler {
 
 func (s *Service) CompleteTaskEndpoint() http.Handler {
 	return task.CompleteHandler(s.domain)
-}
-
-// Telegram webhook handler
-func (s *Service) TelegramWebhookEndpoint() http.Handler {
-	return telegram.WebhookHandler(s.domain)
 }

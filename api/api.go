@@ -32,9 +32,6 @@ type Handler interface {
 	UpdateTaskEndpoint() http.Handler
 	DeleteTaskEndpoint() http.Handler
 	CompleteTaskEndpoint() http.Handler
-
-	// Telegram webhook endpoint
-	TelegramWebhookEndpoint() http.Handler
 }
 
 type Service struct {

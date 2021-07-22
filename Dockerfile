@@ -32,4 +32,4 @@ COPY --from=build_base /tmp/app/out/go-app /app/go-app
 
 EXPOSE ${HTTP_PORT}
 
-CMD ./go-app start
+CMD ./go-app telegram
