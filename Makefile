@@ -15,3 +15,6 @@ refresh:
 	docker-compose rm -f &&\
 	rm -r ./volume &&\
 	make setup
+
+download-audio:
+	docker cp app:/tmp/file.mp3 ./test.mp3

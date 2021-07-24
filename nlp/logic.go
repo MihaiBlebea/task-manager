@@ -8,6 +8,7 @@ import (
 )
 
 type Service interface {
+	Seed() error
 	TextQuery(message string) (*witai.MessageResponse, error)
 	SpeechQuery(file io.Reader) (*witai.MessageResponse, error)
 }
@@ -32,7 +33,7 @@ func (s *service) SpeechQuery(file io.Reader) (*witai.MessageResponse, error) {
 	return s.client.Speech(&witai.MessageRequest{
 		Speech: &witai.Speech{
 			File:        file,
-			ContentType: "audio/raw;encoding=unsigned-integer;bits=16;rate=8000;endian=big",
+			ContentType: "audio/mpeg3",
 		},
 	})
 }

@@ -25,6 +25,8 @@ RUN apt-get update \
 
 RUN update-ca-certificates
 
+RUN apt-get install -y ffmpeg
+
 WORKDIR /app
 
 # Copy the go executable from the build stage
