@@ -5,8 +5,6 @@ import (
 
 	"github.com/MihaiBlebea/task-manager/db"
 	"github.com/MihaiBlebea/task-manager/domain"
-	"github.com/MihaiBlebea/task-manager/domain/project"
-	"github.com/MihaiBlebea/task-manager/domain/task"
 	"github.com/MihaiBlebea/task-manager/domain/user"
 	"github.com/MihaiBlebea/task-manager/nlp"
 	"github.com/MihaiBlebea/task-manager/telegram"
@@ -34,7 +32,7 @@ var telegramCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		db.AutoMigrate(&user.User{}, &task.Task{}, &project.Project{})
+		db.AutoMigrate(&user.User{})
 
 		tm := domain.New(db)
 

@@ -19,17 +19,18 @@ type repo struct {
 type Repo interface {
 	Save(task *User) (int, error)
 	Update(user *User) error
-	FindWithEmail(email string) (*User, error)
-	FindWithID(userID int) (*User, error)
+	All() ([]User, error)
+	DeleteByChatID(chatID int) error
+	FindWithChatID(chatID int) (*User, error)
 }
 
 func NewRepo(conn *gorm.DB) Repo {
 	return &repo{conn}
 }
 
-func (r *repo) FindWithID(userID int) (*User, error) {
+func (r *repo) FindWithChatID(chatID int) (*User, error) {
 	user := User{}
-	err := r.conn.Where("id = ?", userID).Find(&user).Error
+	err := r.conn.Where("chat_id = ?", chatID).Find(&user).Error
 	if err != nil {
 		return &user, err
 	}
@@ -59,16 +60,26 @@ func (r *repo) Update(user *User) error {
 	return cmd.Error
 }
 
-func (r *repo) FindWithEmail(email string) (*User, error) {
-	user := User{}
-	err := r.conn.Where("email = ?", email).Find(&user).Error
+func (r *repo) DeleteByChatID(chatID int) error {
+	user := &User{}
+	if err := r.conn.Where("chat_id = ?", chatID).Find(user).Error; err != nil {
+		return err
+	}
+
+	cmd := r.conn.Delete(user)
+	if cmd.RowsAffected == 0 {
+		return ErrNoRecord
+	}
+
+	return cmd.Error
+}
+
+func (r *repo) All() ([]User, error) {
+	users := make([]User, 0)
+	err := r.conn.Find(&users).Error
 	if err != nil {
-		return &user, err
+		return []User{}, err
 	}
 
-	if user.ID == 0 {
-		return &user, ErrNoRecord
-	}
-
-	return &user, nil
+	return users, nil
 }

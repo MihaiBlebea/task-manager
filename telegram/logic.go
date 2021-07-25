@@ -46,15 +46,45 @@ func (s *service) Start() {
 		s.bot.Send(m.Sender, fmt.Sprintf("%+v", m))
 	})
 
-	s.bot.Handle(onTask, func(m *tb.Message) {
-		context.Cache.Cancel(int(m.Chat.ID))
+	// s.bot.Handle(onTask, func(m *tb.Message) {
+	// 	context.Cache.Cancel(int(m.Chat.ID))
 
-		ctx, err := context.TaskCreateContext(s.tm)
-		if err != nil {
-			s.bot.Send(m.Sender, err.Error())
+	// 	ctx, err := context.TaskCreateContext(s.tm)
+	// 	if err != nil {
+	// 		s.bot.Send(m.Sender, err.Error())
+	// 	}
+	// 	context.Cache.AddContext(int(m.Chat.ID), ctx)
+	// 	s.bot.Send(m.Sender, ctx.GetCurrentQuestion())
+	// })
+
+	s.bot.Handle(onRegister, func(m *tb.Message) {
+		if s.tm.IsRegistered(int(m.Chat.ID)) == false {
+			err := s.tm.RegisterUser(m.Sender.Username, m.Sender.FirstName, m.Sender.LastName, int(m.Chat.ID))
+			if err != nil {
+				s.bot.Send(m.Sender, err.Error())
+				return
+			}
+
+			s.bot.Send(m.Sender, fmt.Sprintf("You are now registered, %s!", m.Sender.FirstName))
+			return
 		}
-		context.Cache.AddContext(int(m.Chat.ID), ctx)
-		s.bot.Send(m.Sender, ctx.GetCurrentQuestion())
+
+		s.bot.Send(m.Sender, fmt.Sprintf("You are already registered, %s!", m.Sender.FirstName))
+	})
+
+	s.bot.Handle(onDelete, func(m *tb.Message) {
+		if s.tm.IsRegistered(int(m.Chat.ID)) == true {
+			err := s.tm.DeleteUser(int(m.Chat.ID))
+			if err != nil {
+				s.bot.Send(m.Sender, err.Error())
+				return
+			}
+
+			s.bot.Send(m.Sender, fmt.Sprintf("Your user was deleted!"))
+			return
+		}
+
+		s.bot.Send(m.Sender, "You are not registered yet")
 	})
 
 	s.bot.Handle(onSkip, func(m *tb.Message) {
@@ -67,17 +97,6 @@ func (s *service) Start() {
 		s.bot.Send(m.Sender, "Context was cancelled")
 	})
 
-	s.bot.Handle(onTasks, func(m *tb.Message) {
-		context.Cache.Cancel(int(m.Chat.ID))
-
-		ctx, err := context.TasksContext(s.tm)
-		if err != nil {
-			s.bot.Send(m.Sender, err.Error())
-		}
-		context.Cache.AddContext(int(m.Chat.ID), ctx)
-		s.bot.Send(m.Sender, ctx.GetCurrentQuestion())
-	})
-
 	s.bot.Handle(tb.OnText, func(m *tb.Message) {
 		chatId := int(m.Chat.ID)
 		if context.Cache.HasPendingContext(chatId) == false {
@@ -87,10 +106,6 @@ func (s *service) Start() {
 		resp := context.Cache.ResolveStep(chatId, m.Text)
 
 		s.bot.Send(m.Sender, resp)
-	})
-
-	s.bot.Handle(tb.OnAudio, func(m *tb.Message) {
-		s.bot.Send(m.Sender, "This is an audio file")
 	})
 
 	s.bot.Handle(tb.OnVoice, func(m *tb.Message) {
@@ -129,6 +144,9 @@ func (s *service) Start() {
 		s.bot.Send(m.Sender, msg.Text)
 		s.bot.Send(m.Sender, fmt.Sprintf("%+v", msg.Entities))
 	})
+
+	// Run the notification worker
+	go s.RunNotificationWorker()
 
 	s.bot.Start()
 }

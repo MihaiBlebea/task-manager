@@ -1,8 +1,8 @@
 package telegram
 
 var (
-	onTask   string = "/task"
-	onTasks  string = "/tasks"
-	onSkip   string = "/skip"
-	onCancel string = "/cancel"
+	onRegister string = "/register"
+	onSkip     string = "/skip"
+	onCancel   string = "/cancel"
+	onDelete   string = "/delete"
 )
